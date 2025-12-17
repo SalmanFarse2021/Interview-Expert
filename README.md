@@ -1,4 +1,4 @@
-# 🎯 FAANG Interview Expert
+# 🎯 Interview Expert
 
 > An AI-powered interview preparation platform built with Next.js, Express, Prisma, and Google Gemini 2.5 Flash. Get FAANG-grade resume optimization, adaptive mock interviews, and personalized career coaching.
 
