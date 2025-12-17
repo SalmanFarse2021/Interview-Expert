@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model ConnectionCheck {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Resume {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  filename      String
+  contentType   String
+  size          Int
+  rawText       String
+  atsScore      Int?
+  strengths     String[]
+  weaknesses    String[]
+  keywords      String[]
+  skills        String[]
+  bulletPoints  String[]
+  rewritten     String?
+  comparisonNote String?
+  // New FAANG-grade fields
+  techSkills    String[]
+  softSkills    String[]
+  education       Json?    // Structured education data
+  workExperience  Json?    // Structured work experience data
+  leadership      Json?    // Structured leadership/extracurricular data
+  projects      Json?     // [{name, tech, description, impact}]
+  impactMetrics String[]  // Extracted numbers/KPIs
+  domain        String?   // e.g., "Full Stack", "AI/ML"
+  createdAt     DateTime  @default(now())
+}
+
+model JobDescription {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  company         String
+  rawText         String
+  requiredSkills  String[]
+  preferredSkills String[]
+  roleFocus       String    // e.g. "Backend", "AI", "Product"
+  seniorityLevel  String    // e.g. "Senior", "Staff"
+  hiddenSignals   String[]  // e.g. "Ownership", "Fast-paced"
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Match {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  resumeId         String          @db.ObjectId
+  jobDescriptionId String          @db.ObjectId
+  score            Int             // 0-100
+  analysis         Json            // { missingSkills, strongMatches, gapAnalysis, recommendation, reasoning }
+  createdAt        DateTime        @default(now())
+
+  @@index([resumeId, jobDescriptionId])
+}
+
+
+model InterviewProfile {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @unique @db.ObjectId
+  targetRole      String?
+  targetCompany   String?
+  weaknesses      String[]
+  strengths       String[]
+  averageScore    Float    @default(0)
+  sessionsCompleted Int    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model InterviewSession {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String?         @db.ObjectId
+  resumeId         String          @db.ObjectId
+  jobDescriptionId String          @db.ObjectId
+  
+  // Context
+  company          String?
+  role             String?
+  type             String          @default("SCREENING") // SCREENING, ONSITE, SYSTEM_DESIGN
+  difficulty       String          @default("MEDIUM")    // EASY, MEDIUM, HARD
+  
+  // Conversation History (Questions + Answers + Feedback)
+  exchanges        Json[]          // [{ id, type, question, answer, feedback, score, metrics, timestamp }]
+  
+  status           String          @default("CREATED") // CREATED, IN_PROGRESS, COMPLETED
+  overallScore     Int?
+  feedbackSummary  String?
+  
+  startTime        DateTime        @default(now())
+  endTime          DateTime?
+  
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+}
+
+
+

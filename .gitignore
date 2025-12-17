@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Builds
+.next/
+dist/
+frontend/.next/
+frontend/out/
+
+# Env / misc
+.env
+.env.local
+.eslintcache
+.DS_Store
